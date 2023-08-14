@@ -1,2 +1,5 @@
 .idea
 *.so
+build/
+dist/
+mirax_profileinfo_extractor.egg-info/
