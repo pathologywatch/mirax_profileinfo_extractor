@@ -35,7 +35,7 @@ def _extract_attributes_from_directory(directory):
     return result
 
 
-def extract_profile_attributes_from_mirax_file(mirax_file):
+def get_mirax_profile_info(mirax_file):
     file = Path(mirax_file).resolve()
     data_content = file.parent / file.stem
     return _extract_attributes_from_directory(str(data_content))
@@ -43,5 +43,5 @@ def extract_profile_attributes_from_mirax_file(mirax_file):
 
 if __name__ == '__main__':
     folder = input("Enter the path to the mirax file: ")
-    properties = extract_profile_attributes_from_mirax_file(folder)
+    properties = get_mirax_profile_info(folder)
     print("Extracted properties:", properties)
