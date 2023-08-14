@@ -1,7 +1,10 @@
+import os
 import ctypes
+from pathlib import Path
 
 # Load the shared library
-lib = ctypes.CDLL('./libprofileinfo_extractor.so')
+cur_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+lib = ctypes.CDLL(os.path.join(cur_dir, "libprofileinfo_extractor.so"))
 
 
 # Define the structure in Python
@@ -15,7 +18,7 @@ lib.extract_attributes_from_directory.restype = ctypes.POINTER(Attribute)
 lib.extract_attributes_from_directory.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
 
 
-def extract_attributes_from_directory(directory):
+def _extract_attributes_from_directory(directory):
     count = ctypes.c_int()
     attributes_ptr = lib.extract_attributes_from_directory(directory.encode('utf-8'), ctypes.byref(count))
 
@@ -32,7 +35,13 @@ def extract_attributes_from_directory(directory):
     return result
 
 
+def extract_profile_attributes_from_mirax_file(mirax_file):
+    file = Path(mirax_file).resolve()
+    data_content = file.parent / file.stem
+    return _extract_attributes_from_directory(str(data_content))
+
+
 if __name__ == '__main__':
-    folder = input("Enter the directory path: ")
-    properties = extract_attributes_from_directory(folder)
+    folder = input("Enter the path to the mirax file: ")
+    properties = extract_profile_attributes_from_mirax_file(folder)
     print("Extracted properties:", properties)
