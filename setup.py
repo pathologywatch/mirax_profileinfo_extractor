@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages, Extension
 
 # Define the C extension
-module1 = Extension('mirax_profileinfo_extractor.extractor',
+module1 = Extension('mirax_profileinfo_extractor',
                     sources=['./profileinfo_extractor.c'])
 
 setup(
@@ -9,9 +9,7 @@ setup(
     version="0.1.0",
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        # List your dependencies here
-    ],
+    install_requires=[],
     author="GODARD Tuatini",
     author_email="tuatini@pathologywatch.com",
     description="A simple library that extracts profile information from a MIRAX file.",

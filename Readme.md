@@ -3,6 +3,10 @@
 This simple lib helps extract extra information from Mirax files that are not provided by other open source libraries like
 [Openslide](https://github.com/openslide/openslide).
 
+## How to build?
+
+Run `make` and find the built package in the `dist` folder.
+
 ## How to use?
 
 Add the lib to your project from pypi and call the function `get_mirax_profile_info` passing the path to the file as parameter.
