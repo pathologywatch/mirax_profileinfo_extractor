@@ -1,4 +1,8 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
+
+# Define the C extension
+module1 = Extension('mirax_profileinfo_extractor.extractor',
+                    sources=['./profileinfo_extractor.c'])
 
 setup(
     name="mirax_profileinfo_extractor",
@@ -20,4 +24,5 @@ setup(
         "Topic :: Software Development",
         "License :: OSI Approved :: MIT License",
     ],
+    ext_modules=[module1]
 )
