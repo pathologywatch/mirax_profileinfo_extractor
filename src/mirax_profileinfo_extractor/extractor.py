@@ -1,6 +1,5 @@
 import sys
 import ctypes
-from ctypes.util import find_library
 from pathlib import Path
 
 
@@ -13,13 +12,20 @@ def load_library(libname):
     else:  # Assume Linux or similar
         libname = "lib" + libname + ".so"
 
-    # Find the library
-    path = find_library(libname)
-    if not path:
-        raise Exception(f"Library {libname} not found")
+    # Construct the path to the library based on the current file's location (within the package)
+    path_within_package = Path(__file__).parent / libname
+
+    # Check if the library exists within the package directory
+    if path_within_package.exists():
+        path = path_within_package
+    else:
+        # If not, check the broader site-packages directory
+        path = Path(__file__).parent.parent / libname
+        if not path.exists():
+            raise Exception(f"Library {libname} not found in expected locations")
 
     # Load the library
-    return ctypes.CDLL(path)
+    return ctypes.CDLL(str(path))
 
 
 # Load the library
