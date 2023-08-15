@@ -16,6 +16,10 @@ create_wheels:
 	python -m pip install --upgrade build
 	python -m build
 
+test_pypi_upload:
+	python3 -m pip install --upgrade twine
+	python -m twine upload --repository testpypi dist/*
+
 shared_lib: lib/profileinfo_extractor.c
 	mkdir -p dist
 	$(CC) $< -shared -fPIC -o dist/$(TARGET)

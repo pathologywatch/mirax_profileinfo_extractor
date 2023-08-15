@@ -32,5 +32,5 @@ def test_extract_profile_info():
     # In this specific case, P1000 are being tested.
     assert data.get("datafile.ProfileType") is not None
     assert data.get("datafile.ProfileName") is not None
-    assert data.get("initfile.GENERAL") is not None
+    assert data.get("initfile.GENERAL.slide_name") is not None
 

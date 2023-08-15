@@ -79,7 +79,7 @@ def get_mirax_profile_info(mirax_file):
         sections = config_object.sections()
         for section in sections:
             items = config_object.items(section)
-            output_dict[section] = dict(items)
+            output_dict.update({f"{section}.{k}":v for k, v in dict(items).items()})
         data.update({f"initfile.{k}": v for k, v in output_dict.items()})
     return data
 
