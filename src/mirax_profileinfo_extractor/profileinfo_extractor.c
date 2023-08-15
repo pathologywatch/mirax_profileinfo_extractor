@@ -8,6 +8,7 @@ typedef struct {
     char value[100];
 } Attribute;
 
+
 Attribute* extract_attributes(const char *content, int *count) {
     char *start = strstr(content, "<data>");
     if (!start) {

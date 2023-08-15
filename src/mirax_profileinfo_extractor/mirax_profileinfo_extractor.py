@@ -1,10 +1,29 @@
-import os
+import sys
 import ctypes
+from ctypes.util import find_library
 from pathlib import Path
 
-# Load the shared library
-cur_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-lib = ctypes.CDLL(os.path.join(cur_dir, "libprofileinfo_extractor.so"))
+
+def load_library(libname):
+    # Detect the platform and adjust the library name
+    if sys.platform == "win32":
+        libname = libname + ".dll"
+    elif sys.platform == "darwin":  # macOS
+        libname = "lib" + libname + ".dylib"
+    else:  # Assume Linux or similar
+        libname = "lib" + libname + ".so"
+
+    # Find the library
+    path = find_library(libname)
+    if not path:
+        raise Exception(f"Library {libname} not found")
+
+    # Load the library
+    return ctypes.CDLL(path)
+
+
+# Load the library
+lib = load_library("profileinfo_extractor")
 
 
 # Define the structure in Python
@@ -31,7 +50,6 @@ def _extract_attributes_from_directory(directory):
 
     # Free the allocated memory in C
     lib.free(attributes_ptr)
-
     return result
 
 

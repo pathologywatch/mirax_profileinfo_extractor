@@ -4,9 +4,9 @@ CFLAGS=-shared -fPIC
 all: create_wheels
 
 create_wheels:
-	python setup.py bdist_wheel
+	python -m build
 
-libprofileinfo_extractor.so: profileinfo_extractor.c
+libprofileinfo_extractor.so: src/mirax_profileinfo_extractor
 	$(CC) $(CFLAGS) profileinfo_extractor.c -o libprofileinfo_extractor.so
 
 clean:
