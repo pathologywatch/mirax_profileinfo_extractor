@@ -1,6 +1,7 @@
 import sys
 import ctypes
 from pathlib import Path
+import configparser
 
 
 def load_library(libname):
@@ -14,10 +15,14 @@ def load_library(libname):
 
     # Construct the path to the library based on the current file's location (within the package)
     path_within_package = Path(__file__).parent / libname
+    # Or inside the dist folder
+    path_within_dist = Path(__file__).parent.parent.parent / "dist" / libname
 
     # Check if the library exists within the package directory
     if path_within_package.exists():
         path = path_within_package
+    elif path_within_dist.exists():
+        path = path_within_dist
     else:
         # If not, check the broader site-packages directory
         path = Path(__file__).parent.parent / libname
@@ -62,7 +67,21 @@ def _extract_attributes_from_directory(directory):
 def get_mirax_profile_info(mirax_file):
     file = Path(mirax_file).resolve()
     data_content = file.parent / file.stem
-    return _extract_attributes_from_directory(str(data_content))
+    init_file = data_content / "Slidedat.ini"
+    # Those attributes can be found on the Mirax file directly
+    data = _extract_attributes_from_directory(str(data_content))
+    data = {f"datafile.{k}": v for k, v in data.items()}
+    if init_file.exists():
+        config_object = configparser.ConfigParser()
+        with open(init_file, "r") as f:
+            config_object.read_file(f)
+        output_dict = dict()
+        sections = config_object.sections()
+        for section in sections:
+            items = config_object.items(section)
+            output_dict[section] = dict(items)
+        data.update({f"initfile.{k}": v for k, v in output_dict.items()})
+    return data
 
 
 if __name__ == '__main__':

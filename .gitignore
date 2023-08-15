@@ -4,3 +4,5 @@
 build/
 dist/
 mirax_profileinfo_extractor.egg-info
+.pytest_cache
+__pycache__

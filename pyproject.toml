@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mirax_profileinfo_extractor"
 version = "0.1.0"
+dependencies = [
+  'configparser',
+]
 authors = [
   { name="GODARD Tuatini", email="tuatini@pathologywatch.com" },
 ]
