@@ -15,6 +15,7 @@ Add the lib to your project from pypi and call the function `get_mirax_profile_i
 from mirax_profileinfo_extractor.extractor import get_mirax_profile_info
 
 mirax_info = get_mirax_profile_info('path/to/file.mrxs')
+print(mirax_info)
 ```
 
 ## License

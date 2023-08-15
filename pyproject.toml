@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "mirax_profileinfo_extractor"
@@ -20,3 +20,9 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/pathologywatch/mirax_profileinfo_extractor"
 "Bug Tracker" = "https://github.com/pathologywatch/mirax_profileinfo_extractor/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
