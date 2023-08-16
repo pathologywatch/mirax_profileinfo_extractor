@@ -8,55 +8,56 @@ typedef struct {
     char value[100];
 } Attribute;
 
-
 Attribute* extract_attributes(const char *content, int *count) {
-    char *start = strstr(content, "<data>");
-    if (!start) {
-        *count = 0;
-        return NULL;
-    }
-
-    start += strlen("<data>");  // Move the pointer past the <data> tag
-
-    char *end = strstr(start, "</data>");
-    if (!end) {
-        *count = 0;
-        return NULL;
-    }
-
     Attribute *attributes = malloc(100 * sizeof(Attribute)); // assuming maximum 100 attributes
     int index = 0;
+    char *pos = content;
 
-    char *pos = start;
-    while (pos < end) {
-        // Find the next attribute
-        char *equal = strchr(pos, '=');
-        if (!equal || equal > end) break;
+    while (pos && *pos) {
+        char *start = strchr(pos, '<'); // Find the start of any tag
 
-        // Extract key and value
-        char *key_end = equal - 1;
-        while(*key_end == ' ' || *key_end == '\n' || *key_end == '\t') key_end--;  // skip any whitespace
+        if (!start) break;  // No more tags found
 
-        char *key_start = key_end;
-        while(key_start > pos && *key_start != ' ' && *key_start != '\n' && *key_start != '\t') key_start--;
+        char *end = strchr(start, '>'); // Find the end of this tag
 
-        // If key_start points to a whitespace character, move to the next character for the start of the key
-        if (*key_start == ' ' || *key_start == '\n' || *key_start == '\t') key_start++;
+        if (!end) break;  // Malformed XML
 
-        char *value_start = equal + 2; // skip '=' and the starting quote
-        char *value_end = strchr(value_start, '"');
+        char *self_closing = strstr(start, "/>"); // Check if it's a self-closing tag
+        if (self_closing && self_closing < end) {
+            end = self_closing;
+        }
 
-        int key_length = key_end - key_start + 1;
-        int value_length = value_end - value_start;
+        pos = end + 1;
 
-        strncpy(attributes[index].key, key_start, key_length);
-        attributes[index].key[key_length] = '\0';
-        strncpy(attributes[index].value, value_start, value_length);
-        attributes[index].value[value_length] = '\0';
+        char *attr_pos = start + 1;
+        while (attr_pos < end) {
+            // Find the next attribute
+            char *equal = strchr(attr_pos, '=');
+            if (!equal || equal > end) break;
 
-        index++;
+            // Extract key and value
+            char *key_end = equal - 1;
+            while(*key_end == ' ' || *key_end == '\n' || *key_end == '\t') key_end--;
 
-        pos = value_end + 1;
+            char *key_start = key_end;
+            while(key_start > attr_pos && *key_start != ' ' && *key_start != '\n' && *key_start != '\t') key_start--;
+
+            if (*key_start == ' ' || *key_start == '\n' || *key_start == '\t') key_start++;
+
+            char *value_start = equal + 2; // Skip '=' and the starting quote
+            char *value_end = strchr(value_start, '"');
+
+            int key_length = key_end - key_start + 1;
+            int value_length = value_end - value_start;
+
+            strncpy(attributes[index].key, key_start, key_length);
+            attributes[index].key[key_length] = '\0';
+            strncpy(attributes[index].value, value_start, value_length);
+            attributes[index].value[value_length] = '\0';
+
+            index++;
+            attr_pos = value_end + 1;
+        }
     }
 
     *count = index;
