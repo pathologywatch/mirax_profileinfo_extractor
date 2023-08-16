@@ -74,11 +74,12 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     fseek(file, 0, SEEK_SET);
 
     char *content = malloc(file_size + 1);
-    fread(content, file_size, 1, file);
+    fread(content, 1, file_size, file);
     content[file_size] = '\0';
     fclose(file);
 
     Attribute *attributes = extract_attributes(content, count);
+    free(content);
     return attributes;
 }
 

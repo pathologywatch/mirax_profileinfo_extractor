@@ -28,16 +28,16 @@ def test_extract_profile_info():
         raise Exception("Please provide a Mirax file path in the MIRAX_FILE environment variable")
     data = get_mirax_profile_info(mirax_file)
 
-    assert data.get("datafile.ProfileName") is not None
-    assert data.get("initfile.GENERAL.slide_name") is not None
+    assert data.get("datafile.ProfileName") is not None and len(data["datafile.ProfileName"]) > 0
+    assert data.get("initfile.GENERAL.slide_name") is not None and len(data["initfile.GENERAL.slide_name"]) > 0
 
     mirax_file2 = os.getenv("MIRAX_FILE_2")
     if mirax_file2:
         # Call the function twice to make sure there are no double free errors
         data = get_mirax_profile_info(mirax_file2)
 
-        assert data.get("datafile.ProfileName") is not None
-        assert data.get("initfile.GENERAL.slide_name") is not None
+        assert data.get("datafile.ProfileName") is not None and len(data["datafile.ProfileName"]) > 0
+        assert data.get("initfile.GENERAL.slide_name") is not None and len(data["initfile.GENERAL.slide_name"]) > 0
     print("Test passed")
 
 

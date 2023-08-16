@@ -20,6 +20,11 @@ test_pypi_upload:
 	python3 -m pip install --upgrade twine
 	python -m twine upload --repository testpypi dist/*
 
+# Use __token__ as username and the Pypi API token as password
+pypi_upload:
+	python3 -m pip install --upgrade twine
+	python -m twine upload dist/*
+
 shared_lib: lib/profileinfo_extractor.c
 	mkdir -p dist
 	$(CC) $< -shared -fPIC -o dist/$(TARGET)
