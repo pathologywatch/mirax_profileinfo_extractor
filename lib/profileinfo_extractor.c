@@ -31,11 +31,9 @@ Attribute* extract_attributes(const char *content, int *count) {
 
         char *attr_pos = start + 1;
         while (attr_pos < end) {
-            // Find the next attribute
             char *equal = strchr(attr_pos, '=');
             if (!equal || equal > end) break;
 
-            // Extract key and value
             char *key_end = equal - 1;
             while(*key_end == ' ' || *key_end == '\n' || *key_end == '\t') key_end--;
 
@@ -44,7 +42,7 @@ Attribute* extract_attributes(const char *content, int *count) {
 
             if (*key_start == ' ' || *key_start == '\n' || *key_start == '\t') key_start++;
 
-            char *value_start = equal + 2; // Skip '=' and the starting quote
+            char *value_start = equal + 2;
             char *value_end = strchr(value_start, '"');
 
             int key_length = key_end - key_start + 1;
@@ -104,7 +102,16 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             int count;
             Attribute *attributes = extract_attributes_from_file(filepath, &count);
 
-            all_attributes = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
+            Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
+            if (temp) {
+                all_attributes = temp;
+            } else {
+                // Handle realloc failure: free existing memory and return
+                free(all_attributes);
+                *total_count = 0;
+                return NULL;
+            }
+
             memcpy(all_attributes + all_attributes_size, attributes, count * sizeof(Attribute));
             all_attributes_size += count;
 
