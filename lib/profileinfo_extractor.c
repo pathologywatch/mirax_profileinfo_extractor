@@ -102,15 +102,7 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             int count;
             Attribute *attributes = extract_attributes_from_file(filepath, &count);
 
-            Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
-            if (temp) {
-                all_attributes = temp;
-            } else {
-                // Handle realloc failure: free existing memory and return
-                free(all_attributes);
-                *total_count = 0;
-                return NULL;
-            }
+            all_attributes = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
 
             memcpy(all_attributes + all_attributes_size, attributes, count * sizeof(Attribute));
             all_attributes_size += count;

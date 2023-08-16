@@ -1,6 +1,5 @@
 import os
 import sys
-import subprocess as subp
 from pathlib import Path
 
 root_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.resolve()
@@ -16,9 +15,9 @@ else:  # Assume Linux or similar
 def test_extract_profile_info():
     """Test extract_profile_info() function."""
     # Remove the shared library if it exists
-    subp.check_call(f'rm -f {root_dir}/dist/libprofileinfo_extractor.{EXT}', shell=True)
+    os.system(f'rm -f {root_dir}/dist/libprofileinfo_extractor.{EXT}')
     # Compiles the C library first
-    subp.check_call(f"cd {root_dir} && make shared_lib", shell=True)
+    os.system(f"cd {root_dir} && make shared_lib")
     # Now import the function
     from src.mirax_profileinfo_extractor.extractor import get_mirax_profile_info
 
@@ -29,8 +28,14 @@ def test_extract_profile_info():
         raise Exception("Please provide a Mirax file path in the MIRAX_FILE environment variable")
     data = get_mirax_profile_info(mirax_file)
 
-    # Those data are not always available for all 3DHistech scanners.
-    # In this specific case, P1000 are being tested.
     assert data.get("datafile.ProfileName") is not None
     assert data.get("initfile.GENERAL.slide_name") is not None
+
+    mirax_file2 = os.getenv("MIRAX_FILE_2")
+    if mirax_file2:
+        # Call the function twice to make sure there are no double free errors
+        data = get_mirax_profile_info(mirax_file2)
+
+        assert data.get("datafile.ProfileName") is not None
+        assert data.get("initfile.GENERAL.slide_name") is not None
 
