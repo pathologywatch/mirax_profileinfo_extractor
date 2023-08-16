@@ -70,6 +70,8 @@ def _extract_attributes_from_directory(directory):
 
 def get_mirax_profile_info(mirax_file, include_initfile_metadata=True):
     file = Path(mirax_file).resolve()
+    if not file.exists():
+        raise FileNotFoundError(f"File {file} does not exist")
     data_content = file.parent / file.stem
     init_file = data_content / "Slidedat.ini"
     # Those attributes can be found on the Mirax file directly
