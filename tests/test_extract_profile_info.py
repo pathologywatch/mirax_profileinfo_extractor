@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess as subp
 from pathlib import Path
 
 root_dir = Path(os.path.dirname(os.path.abspath(__file__))).parent.resolve()
@@ -15,9 +16,9 @@ else:  # Assume Linux or similar
 def test_extract_profile_info():
     """Test extract_profile_info() function."""
     # Remove the shared library if it exists
-    os.system(f'rm -f {root_dir}/dist/libprofileinfo_extractor.{EXT}')
+    subp.check_call(f'rm -f {root_dir}/dist/libprofileinfo_extractor.{EXT}', shell=True)
     # Compiles the C library first
-    os.system(f"cd {root_dir} && make shared_lib")
+    subp.check_call(f"cd {root_dir} && make shared_lib", shell=True)
     # Now import the function
     from src.mirax_profileinfo_extractor.extractor import get_mirax_profile_info
 
