@@ -59,6 +59,10 @@ def _extract_attributes_from_directory(directory):
     for attr in attributes_list:
         result[attr.key.decode('utf-8')] = attr.value.decode('utf-8')
 
+    for k, v in result.items():
+        if len(k) >= 300 or len(v) >= 300:
+            raise Exception(f"Attribute key or value {k} and {v} too long")
+
     # Free the allocated memory in C
     lib.free(attributes_ptr)
     return result

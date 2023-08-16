@@ -74,9 +74,21 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     fseek(file, 0, SEEK_SET);
 
     char *content = malloc(file_size + 1);
-    fread(content, 1, file_size, file);
-    content[file_size] = '\0';
+    if (!content) {
+        fclose(file);
+        *count = 0;
+        return NULL;
+    }
+
+    size_t bytes_read = fread(content, 1, file_size, file);
+    content[bytes_read] = '\0';  // Use bytes_read to null-terminate
     fclose(file);
+
+    if (bytes_read != file_size) {
+        free(content);
+        *count = 0;
+        return NULL;
+    }
 
     Attribute *attributes = extract_attributes(content, count);
     free(content);
@@ -102,7 +114,15 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             int count;
             Attribute *attributes = extract_attributes_from_file(filepath, &count);
 
-            all_attributes = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
+            Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
+            if (!temp) {
+                free(all_attributes);
+                free(attributes);
+                closedir(dir);
+                *total_count = 0;
+                return NULL;
+            }
+            all_attributes = temp;
 
             memcpy(all_attributes + all_attributes_size, attributes, count * sizeof(Attribute));
             all_attributes_size += count;
@@ -113,6 +133,5 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
 
     closedir(dir);
     *total_count = all_attributes_size;
-    // Free all_attributes in the caller (Python code)
     return all_attributes;
 }
