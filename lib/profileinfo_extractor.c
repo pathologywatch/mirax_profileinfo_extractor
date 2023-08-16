@@ -9,9 +9,9 @@ typedef struct {
 } Attribute;
 
 Attribute* extract_attributes(const char *content, int *count) {
-    Attribute *attributes = malloc(100 * sizeof(Attribute)); // assuming maximum 100 attributes
+    Attribute *attributes = malloc(500 * sizeof(Attribute)); // assuming maximum 500 attributes
     int index = 0;
-    char *pos = content;
+    const char *pos = content;
 
     while (pos && *pos) {
         char *start = strchr(pos, '<'); // Find the start of any tag
@@ -79,7 +79,6 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     fclose(file);
 
     Attribute *attributes = extract_attributes(content, count);
-    free(content);
     return attributes;
 }
 
@@ -113,5 +112,6 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
 
     closedir(dir);
     *total_count = all_attributes_size;
+    // Free all_attributes in the caller (Python code)
     return all_attributes;
 }

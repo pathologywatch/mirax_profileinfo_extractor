@@ -38,4 +38,8 @@ def test_extract_profile_info():
 
         assert data.get("datafile.ProfileName") is not None
         assert data.get("initfile.GENERAL.slide_name") is not None
+    print("Test passed")
 
+
+if __name__ == '__main__':
+    test_extract_profile_info()
