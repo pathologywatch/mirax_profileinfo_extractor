@@ -68,14 +68,14 @@ def _extract_attributes_from_directory(directory):
     return result
 
 
-def get_mirax_profile_info(mirax_file):
+def get_mirax_profile_info(mirax_file, include_initfile_metadata=True):
     file = Path(mirax_file).resolve()
     data_content = file.parent / file.stem
     init_file = data_content / "Slidedat.ini"
     # Those attributes can be found on the Mirax file directly
     data = _extract_attributes_from_directory(str(data_content))
     data = {f"datafile.{k}": v for k, v in data.items()}
-    if init_file.exists():
+    if include_initfile_metadata and init_file.exists():
         config_object = configparser.ConfigParser()
         with open(init_file, "r") as f:
             config_object.read_file(f)

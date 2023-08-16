@@ -34,10 +34,10 @@ def test_extract_profile_info():
     mirax_file2 = os.getenv("MIRAX_FILE_2")
     if mirax_file2:
         # Call the function twice to make sure there are no double free errors
-        data = get_mirax_profile_info(mirax_file2)
+        data_2 = get_mirax_profile_info(mirax_file2, include_initfile_metadata=False)
 
-        assert data.get("datafile.ProfileName") is not None and len(data["datafile.ProfileName"]) > 0
-        assert data.get("initfile.GENERAL.slide_name") is not None and len(data["initfile.GENERAL.slide_name"]) > 0
+        assert data_2.get("datafile.ProfileName") is not None and len(data_2["datafile.ProfileName"]) > 0
+        assert data_2.get("initfile.GENERAL.slide_name") is None
     print("Test passed")
 
 
