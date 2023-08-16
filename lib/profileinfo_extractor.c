@@ -118,7 +118,6 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
             if (!temp) {
                 free(attributes);
-                free(all_attributes);
                 closedir(dir);
                 *total_count = 0;
                 return NULL;
