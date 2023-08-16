@@ -14,6 +14,9 @@ Attribute* extract_attributes(const char *content, int *count) {
     const char *pos = content;
 
     while (pos && *pos) {
+        if (index >= 500) {
+            break; // Do not exceed the maximum number of attributes
+        }
         char *start = strchr(pos, '<'); // Find the start of any tag
 
         if (!start) break;  // No more tags found
@@ -44,6 +47,8 @@ Attribute* extract_attributes(const char *content, int *count) {
 
             char *value_start = equal + 2;
             char *value_end = strchr(value_start, '"');
+
+            if (!value_end) break; // Malformed attribute
 
             int key_length = key_end - key_start + 1;
             int value_length = value_end - value_start;
@@ -84,12 +89,6 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     content[bytes_read] = '\0';  // Use bytes_read to null-terminate
     fclose(file);
 
-    if (bytes_read != file_size) {
-        free(content);
-        *count = 0;
-        return NULL;
-    }
-
     Attribute *attributes = extract_attributes(content, count);
     free(content);
     return attributes;
@@ -114,10 +113,12 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             int count;
             Attribute *attributes = extract_attributes_from_file(filepath, &count);
 
+            if (!attributes) continue; // Skip this file if attribute extraction failed
+
             Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
             if (!temp) {
-                free(all_attributes);
                 free(attributes);
+                free(all_attributes);
                 closedir(dir);
                 *total_count = 0;
                 return NULL;
