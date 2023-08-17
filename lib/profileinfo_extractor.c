@@ -86,7 +86,7 @@ Attribute* extract_attributes(const char *content, int *count) {
             attributes[index].value[value_length] = '\0';
 
             index++;
-            if (index >= allocated_size) {
+            if (index == allocated_size) {
                 reallocate_attributes(&attributes, &allocated_size, allocated_size + ATTRIBUTE_INCREMENT);
             }
             attr_pos = value_end + 1;
