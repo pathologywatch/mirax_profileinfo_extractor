@@ -3,20 +3,40 @@
 #include <string.h>
 #include <dirent.h>
 
+#define INITIAL_ATTRIBUTE_COUNT 100  // Start with a smaller initial allocation
+#define ATTRIBUTE_INCREMENT 100     // Increment size when more space is needed
+
 typedef struct {
     char key[100];
     char value[100];
 } Attribute;
 
+int reallocate_attributes(Attribute **attributes, int *allocated_size, int new_size) {
+    Attribute *new_attributes = realloc(*attributes, new_size * sizeof(Attribute));
+    if (!new_attributes) {
+        // Handle reallocation failure, for example by breaking out of the loop
+        free(*attributes);
+        *allocated_size = 0;
+        return 0;
+    }
+    *attributes = new_attributes;
+    *allocated_size = new_size;
+    return 1;
+}
+
 Attribute* extract_attributes(const char *content, int *count) {
-    Attribute *attributes = malloc(1000 * sizeof(Attribute)); // assuming maximum 1000 attributes
+    int allocated_size = INITIAL_ATTRIBUTE_COUNT;
+    Attribute *attributes = malloc(allocated_size * sizeof(Attribute));
+
+    if (!attributes) {
+        *count = 0;
+        return NULL;
+    }
+
     int index = 0;
     const char *pos = content;
 
     while (pos && *pos) {
-        if (index >= 500) {
-            break; // Do not exceed the maximum number of attributes
-        }
         char *start = strchr(pos, '<'); // Find the start of any tag
 
         if (!start) break;  // No more tags found
@@ -66,6 +86,9 @@ Attribute* extract_attributes(const char *content, int *count) {
             attributes[index].value[value_length] = '\0';
 
             index++;
+            if (index >= allocated_size) {
+                reallocate_attributes(&attributes, &allocated_size, allocated_size + ATTRIBUTE_INCREMENT);
+            }
             attr_pos = value_end + 1;
         }
     }
