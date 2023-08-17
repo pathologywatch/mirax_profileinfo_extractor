@@ -9,7 +9,7 @@ typedef struct {
 } Attribute;
 
 Attribute* extract_attributes(const char *content, int *count) {
-    Attribute *attributes = malloc(500 * sizeof(Attribute)); // assuming maximum 500 attributes
+    Attribute *attributes = malloc(1000 * sizeof(Attribute)); // assuming maximum 1000 attributes
     int index = 0;
     const char *pos = content;
 
@@ -53,6 +53,13 @@ Attribute* extract_attributes(const char *content, int *count) {
             int key_length = key_end - key_start + 1;
             int value_length = value_end - value_start;
 
+            if (key_length >= sizeof(attributes[index].key)) {
+                key_length = sizeof(attributes[index].key) - 1;
+            }
+            if (value_length >= sizeof(attributes[index].value)) {
+                value_length = sizeof(attributes[index].value) - 1;
+            }
+
             strncpy(attributes[index].key, key_start, key_length);
             attributes[index].key[key_length] = '\0';
             strncpy(attributes[index].value, value_start, value_length);
@@ -70,6 +77,7 @@ Attribute* extract_attributes(const char *content, int *count) {
 Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     FILE *file = fopen(filepath, "rb");
     if (!file) {
+        printf("Failed to open file: %s\n", filepath);
         *count = 0;
         return NULL;
     }
@@ -91,8 +99,12 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
 
     Attribute *attributes = extract_attributes(content, count);
     free(content);
+    if (!attributes) {
+        printf("No attributes extracted from: %s\n", filepath);
+    }
     return attributes;
 }
+
 
 Attribute* extract_attributes_from_directory(const char *directory, int *total_count) {
     DIR *dir = opendir(directory);
@@ -113,19 +125,26 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             int count;
             Attribute *attributes = extract_attributes_from_file(filepath, &count);
 
-            if (!attributes) continue; // Skip this file if attribute extraction failed
+            // If count is 0, free the attributes immediately
+            if (count == 0) {
+                free(attributes);
+                attributes = NULL;
+            }
+
+            // Skip this file if attribute extraction failed
+            if (!attributes) {
+                continue;
+            }
 
             Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
-            if (!temp) {
-                free(attributes);
-                closedir(dir);
-                *total_count = 0;
-                return NULL;
-            }
+            if (!temp) continue;
             all_attributes = temp;
 
-            memcpy(all_attributes + all_attributes_size, attributes, count * sizeof(Attribute));
-            all_attributes_size += count;
+            // Ensure we aren't copying beyond allocated space.
+            if (count > 0) {
+                memcpy(all_attributes + all_attributes_size, attributes, count * sizeof(Attribute));
+                all_attributes_size += count;
+            }
 
             free(attributes);
         }
