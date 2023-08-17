@@ -57,7 +57,13 @@ def _extract_attributes_from_directory(directory):
     # Convert the list of Attribute objects to a dictionary
     result = {}
     for attr in attributes_list:
-        result[attr.key.decode('utf-8', errors='ignore')] = attr.value.decode('utf-8', errors='ignore')
+        try:
+            key = attr.key.decode('utf-8', errors='strict')
+            val = attr.value.decode('utf-8', errors='strict')
+            result[key] = val
+        except UnicodeDecodeError:
+            # Ignore errors in decoding non UTF-8 characters
+            pass
 
     for k, v in result.items():
         if len(k) >= 300 or len(v) >= 300:
