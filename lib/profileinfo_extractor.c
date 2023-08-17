@@ -73,10 +73,10 @@ Attribute* extract_attributes(const char *content, int *count) {
             int key_length = key_end - key_start + 1;
             int value_length = value_end - value_start;
 
-            if (key_length >= sizeof(attributes[index].key)) {
+            if (key_length >= (int) sizeof(attributes[index].key)) {
                 key_length = sizeof(attributes[index].key) - 1;
             }
-            if (value_length >= sizeof(attributes[index].value)) {
+            if (value_length >= (int) sizeof(attributes[index].value)) {
                 value_length = sizeof(attributes[index].value) - 1;
             }
 
