@@ -87,7 +87,9 @@ Attribute* extract_attributes(const char *content, int *count) {
 
             index++;
             if (index == allocated_size) {
-                reallocate_attributes(&attributes, &allocated_size, allocated_size + ATTRIBUTE_INCREMENT);
+                if (!reallocate_attributes(&attributes, &allocated_size, allocated_size + ATTRIBUTE_INCREMENT)) {
+                    break;  // Exit the loop if reallocation failed
+                }
             }
             attr_pos = value_end + 1;
         }
@@ -117,6 +119,13 @@ Attribute* extract_attributes_from_file(const char *filepath, int *count) {
     }
 
     size_t bytes_read = fread(content, 1, file_size, file);
+    if (bytes_read < file_size) {
+        printf("Failed to read the entire file: %s\n", filepath);
+        free(content);
+        *count = 0;
+        return NULL;
+    }
+
     content[bytes_read] = '\0';  // Use bytes_read to null-terminate
     fclose(file);
 
@@ -160,7 +169,11 @@ Attribute* extract_attributes_from_directory(const char *directory, int *total_c
             }
 
             Attribute *temp = realloc(all_attributes, (all_attributes_size + count) * sizeof(Attribute));
-            if (!temp) continue;
+            if (!temp) {
+                printf("Failed to allocate memory for attributes. Skipping file: %s\n", filepath);
+                free(attributes);  // ensure the attributes from the current file are freed
+                continue;
+            }
             all_attributes = temp;
 
             // Ensure we aren't copying beyond allocated space.
