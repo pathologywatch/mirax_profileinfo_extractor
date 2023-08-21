@@ -88,7 +88,12 @@ def get_mirax_profile_info(mirax_file, include_initfile_metadata=True):
     if include_initfile_metadata and init_file.exists():
         config_object = configparser.ConfigParser()
         with open(init_file, "r") as f:
-            config_object.read_file(f)
+            # The ini files sometimes has corrupted chars...
+            file_content = f.read()
+            # Remove BOM if present
+            if file_content.startswith('\ufeff'):
+                file_content = file_content[1:]
+            config_object.read_string(file_content)
         output_dict = dict()
         sections = config_object.sections()
         for section in sections:
