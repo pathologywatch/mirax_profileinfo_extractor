@@ -3,12 +3,13 @@ package:
   version: "0.2.2"
 
 source:
-  path: ../  # This assumes the Conda recipe directory is adjacent to your source code
+  path: ../  # This assumes the Conda recipe directory is adjacent to the source code
 
 
 build:
   number: 0
   script:
+    # With conda we have to compile on every different architecture that we want to support
     - gcc lib/profileinfo_extractor.c -shared -fPIC -o libprofileinfo_extractor.so -O3
     - "{{ PYTHON }} -m pip install . --no-deps -vv"
 
