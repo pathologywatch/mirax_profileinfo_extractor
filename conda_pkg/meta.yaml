@@ -1,21 +1,23 @@
 package:
   name: mirax_profileinfo_extractor
-  version: "0.2.1"
+  version: "0.2.2"
 
 source:
-  url: https://files.pythonhosted.org/packages/ee/cd/8156d6035b1dc5671cf377f80f6433a05b7cc6406d9ec168729abd1ddc7c/mirax_profileinfo_extractor-0.2.1.tar.gz
-  sha256: 3c3f77184d3ce3cce3321b766cdc2466104710c630b226a0a65f944bc90fd63e
+  path: ../  # This assumes the Conda recipe directory is adjacent to your source code
+
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script:
+    - gcc lib/profileinfo_extractor.c -shared -fPIC -o libprofileinfo_extractor.so -O3
+    - "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   host:
     - python
     - pip
     - configparser
+    - {{ compiler('c') }}
   run:
     - python
 

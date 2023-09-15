@@ -17,7 +17,12 @@ create_wheels:
 	python -m build
 
 build_conda:
-	conda-build ./conda_pkg
+	conda build ./conda_pkg --output-folder ./dist/
+
+upload_conda:
+	rm -rf ./dist/
+	conda build ./conda_pkg --output-folder ./dist/
+	anaconda upload ./dist/*/*.tar.bz2
 
 test_pypi_upload:
 	python3 -m pip install --upgrade twine
