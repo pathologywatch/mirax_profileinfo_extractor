@@ -5,7 +5,7 @@ This simple lib helps extract extra information from Mirax files that are not pr
 
 ## How to install?
 
-`pip install mirax_profileinfo_extractor`
+`pip install mirax_profileinfo_extractor` or with conda `conda install -c ekami mirax_profileinfo_extractor`.
 
 ## How to build?
 
