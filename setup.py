@@ -19,9 +19,11 @@ ext = Extension(
 )
 
 setup_args = dict(
+    name='mirax_profileinfo_extractor',
+    version='0.2.4',
     packages=find_packages(where="src"),
-    cmdclass=dict(build_ext=CustomBuildExt),
     package_dir={"": "src"},
+    cmdclass=dict(build_ext=CustomBuildExt),
     ext_modules=[ext],
 )
 

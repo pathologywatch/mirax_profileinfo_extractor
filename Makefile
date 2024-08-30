@@ -25,13 +25,15 @@ upload_conda:
 	anaconda upload ./dist/*/*.tar.bz2
 
 test_pypi_upload:
-	python3 -m pip install --upgrade twine
-	python -m twine upload --repository testpypi dist/*
+    python -m pip install --upgrade twine cibuildwheel
+    python -m cibuildwheel --output-dir wheelhouse
+    python -m twine upload --repository testpypi wheelhouse/*
 
 # Use __token__ as username and the Pypi API token as password
 pypi_upload:
-	python3 -m pip install --upgrade twine
-	python -m twine upload dist/*
+    python -m pip install --upgrade twine cibuildwheel
+    python -m cibuildwheel --output-dir wheelhouse
+    python -m twine upload wheelhouse/*
 
 shared_lib: lib/profileinfo_extractor.c
 	mkdir -p dist
@@ -43,6 +45,7 @@ clean:
 	libprofileinfo_extractor.dylib \
 	build \
 	dist \
+	wheelhouse \
 	src/mirax_profileinfo_extractor.egg-info
 
 run-python:
