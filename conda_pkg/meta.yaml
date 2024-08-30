@@ -1,6 +1,6 @@
 package:
   name: mirax_profileinfo_extractor
-  version: "0.2.2"
+  version: "0.2.4"
 
 source:
   path: ../  # This assumes the Conda recipe directory is adjacent to the source code
@@ -14,13 +14,17 @@ build:
     - "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
+  build:
+    - python {{ python }}
+    - setuptools
+    - anaconda-client
   host:
-    - python
+    - python {{ python }}
     - pip
     - configparser
     - {{ compiler('c') }}
   run:
-    - python
+    - python {{ python }}
 
 about:
   home: https://github.com/pathologywatch/mirax_profileinfo_extractor
